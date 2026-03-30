@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm mocks/*_202*",
-    "prepublishOnly": "npm run build"
+    "prepare": "npm run build"
   },
   "files": [
     "build",
