@@ -9,6 +9,9 @@ export const PACKAGE_ROOT = path.resolve(__dirname, '..')
 
 export const IS_BROWSER_VISIBLE = process.env.IS_BROWSER_VISIBLE === 'true'
 
+/** WebSocket endpoint of a remote CDP instance to connect to instead of launching a local browser */
+export const BROWSER_WS_ENDPOINT = process.env.BROWSER_WS_ENDPOINT
+
 /** Use local mock files instead of live scraping */
 export const USE_MOCKS = process.env.USE_MOCK_RESPONSES === 'true'
 

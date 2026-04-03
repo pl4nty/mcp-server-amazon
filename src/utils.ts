@@ -1,6 +1,6 @@
 import fs from 'fs'
 import puppeteer from 'puppeteer'
-import { COOKIES_FILE_PATH, AMAZON_COOKIES, IS_BROWSER_VISIBLE } from './config.js'
+import { COOKIES_FILE_PATH, AMAZON_COOKIES, IS_BROWSER_VISIBLE, BROWSER_WS_ENDPOINT } from './config.js'
 
 /** Get the current timestamp like "2024-06-06_15-30-45" */
 export function getTimestamp() {
@@ -32,14 +32,25 @@ export function loadAmazonCookiesFile() {
 }
 
 export async function createBrowserAndPage(): Promise<{ browser: puppeteer.Browser; page: puppeteer.Page }> {
-  // Launch Puppeteer
-  const browser = await puppeteer.launch({
-    headless: !IS_BROWSER_VISIBLE,
-    devtools: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--disable-blink-features=AutomationControlled'],
-    ignoreDefaultArgs: ['--enable-automation'],
-    defaultViewport: null,
-  })
+  let browser: puppeteer.Browser
+
+  if (BROWSER_WS_ENDPOINT) {
+    // Connect to a remote CDP instance
+    console.error(`[INFO] Connecting to remote browser via BROWSER_WS_ENDPOINT: ${BROWSER_WS_ENDPOINT}`)
+    browser = await puppeteer.connect({
+      browserWSEndpoint: BROWSER_WS_ENDPOINT,
+      defaultViewport: null,
+    })
+  } else {
+    // Launch a local Puppeteer browser
+    browser = await puppeteer.launch({
+      headless: !IS_BROWSER_VISIBLE,
+      devtools: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--disable-blink-features=AutomationControlled'],
+      ignoreDefaultArgs: ['--enable-automation'],
+      defaultViewport: null,
+    })
+  }
 
   // Set cookies if available
   if (AMAZON_COOKIES?.length > 0) {
